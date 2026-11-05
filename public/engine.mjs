@@ -46,6 +46,15 @@ export function reduceGame(prev,action){
       if(s.status!=='approval'||!s.approvalFor)return prev;
       if(action.approved!==true){s.status='lost';s.finishedAt=NOW();s.approvalFor=null;return record(s,'warning','Operator denied high-risk action. Mission safely stopped.');}
       s.status='running';s.approvalFor=null;s.approvedSteps.push(s.stepIndex);return record(s,'verified','Operator approved sandbox high-risk checkpoint (not identity verified).',{step:s.stepIndex});}
+    case 'RECORD_ADVICE':{
+      if(!m||s.status!=='running')return prev;
+      const id=action.requestId,plan=action.plan;
+      if(typeof id!=='string'||id.length<2||id.length>160||!plan||!['buy','execute','wait'].includes(plan.action))return prev;
+      if(typeof plan.reason!=='string'||!plan.reason.trim()||plan.reason.length>360)return prev;
+      if(plan.action==='buy'&&!SERVICES.some(x=>x.id===plan.service))return prev;
+      return record(s,'agent',`0G model suggested ${plan.action.toUpperCase()} for sandbox stage ${s.stepIndex+1}. Human must apply it; no external payment was made.`,{provider:'0g',requestId:id,action:plan.action,stage:s.stepIndex});
+    }
+    case 'WAIT': if(!m||s.status!=='running')return prev;return record(s,'agent','Operator accepted WAIT: no credit spent and no stage advanced.');
     case 'ATTACK':{
       if(!m || s.status!=='running')return prev;
       const amount=Number(action.amount);
