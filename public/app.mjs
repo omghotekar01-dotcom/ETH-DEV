@@ -8,7 +8,7 @@ const escapeHTML=s=>String(s??'').replace(/[&<>\"']/g,c=>({'&':'&amp;','<':'&lt;
 const pct=(a,b)=>Math.round((a/Math.max(1,b))*100);
 const cl=s=>s==='won'?'success':s==='lost'?'danger':s==='approval'?'warning':s==='running'?'active':'';
 function dispatch(action){const next=reduceGame(state,action);if(next===state)return;state=next;hist.push(structuredClone(state));if(hist.length>90)hist.shift();save();render();if(['won','lost','approval'].includes(state.status))stopAuto();}
-function start(id){stopAuto();aiAdvice=null;replayIndex=null;dispatch({type:'START',id});view='arena';overlay=null;popup('Mission deployed in sandbox mode');}
+function start(id){stopAuto();aiAdvice=null;replayIndex=null;dispatch({type:'START',id});view='arena';overlay=null;render();popup('Mission deployed in sandbox mode');}
 function stopAuto(){if(auto){clearInterval(auto);auto=null;}$('.auto-btn')?.classList.remove('playing');}
 function toggleAuto(){if(auto){stopAuto();render();return;}if(!canTick(state)){popup('Launch or resume a mission first');return;}auto=setInterval(()=>{if(!canTick(state)){stopAuto();render();return;}dispatch({type:'TICK'});},1350);render();}
 function popup(t){toastText=t;const el=$('#toast');if(el){el.textContent=t;el.classList.add('visible');setTimeout(()=>el.classList.remove('visible'),2600);}}
