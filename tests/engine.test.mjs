@@ -12,3 +12,22 @@ test('malicious agent purchase is denied without spending or progressing',()=>{l
 test('an allowed amount still never triggers external payment',()=>{let s=reduceGame(initialState(),{type:'START',id:'blackout'});s=reduceGame(s,{type:'ATTACK',merchant:'recon',amount:3});assert.equal(s.purchases.length,0);assert.equal(s.spent,0);});
 test('approval checkpoint can be replayed without bypass',()=>{let s=reduceGame(initialState(),{type:'START',id:'genesis'});s=reduceGame(s,{type:'TICK'});s=reduceGame(s,{type:'TICK'});s=reduceGame(s,{type:'TICK'});assert.equal(s.status,'approval');s=approveGame(s,true);assert.equal(s.approvedSteps.includes(2),true);s=reduceGame(s,{type:'TICK'});assert.equal(s.status,'running');assert.equal(s.stepIndex,3);});
 test('forbidden actions on paused and idle games do not modify budget',()=>{let s=initialState();assert.equal(reduceGame(s,{type:'ATTACK',merchant:'evil',amount:999}),s);s=reduceGame(s,{type:'START',id:'blackout'});s=reduceGame(s,{type:'PAUSE'});assert.equal(reduceGame(s,{type:'ATTACK',merchant:'evil',amount:999}),s);});
+
+test('0G advice is logged but can never spend or execute by itself',()=>{
+  const started=reduceGame(initialState(),{type:'START',id:'blackout'});
+  const id='chatcmpl-test-0g';
+  const next=reduceGame(started,{type:'RECORD_ADVICE',requestId:id,plan:{action:'buy',service:'recon',reason:'Useful signal intel'}});
+  assert.equal(next.remaining,started.remaining);
+  assert.equal(next.stepIndex,started.stepIndex);
+  assert.equal(next.logs[0].requestId,id);
+  assert.equal(next.logs[0].provider,'0g');
+  assert.strictEqual(reduceGame(started,{type:'RECORD_ADVICE',requestId:id,plan:{action:'wire-all-money',reason:'Attack'}}),started);
+});
+
+test('wait keeps budgets intact',()=>{
+  const started=reduceGame(initialState(),{type:'START',id:'vault'});
+  const next=reduceGame(started,{type:'WAIT'});
+  assert.equal(next.remaining,started.remaining);
+  assert.equal(next.stepIndex,started.stepIndex);
+  assert.match(next.logs[0].text,/no credit spent/i);
+});
