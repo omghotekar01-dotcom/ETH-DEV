@@ -30,20 +30,28 @@
 | Live 0G Private Computer model advisor | Integration code present; needs OG_API_KEY, OG_MODEL and RIFT_ACCESS_TOKEN; not remotely verified |
 | Arkiv read/write/query-back | Integration code present; needs funded Rabdi wallet, access key and SDK installation; not remotely verified |
 | Hedera x402 autonomous testnet paid request | Protected CLI integration code present; needs x402 endpoint, strict merchant allowlist, funded Hedera testnet wallet and SDK installation; not remotely verified |
-| Production live deployment | Not independently confirmed |
+| Standalone Vercel research preview | Deployment reported READY; public page/API reachability still requires independent external check |
 
 ## Quick start
 
 Requires Node.js 22.10+. There are **no required npm packages to run the local game**.
 
 ```bash
-git clone https://github.com/omghotekar01-dotcom/ETH-DEV.git
+git clone --branch feat/rift-agent-arena-20261105-ready --single-branch https://github.com/omghotekar01-dotcom/ETH-DEV.git
 cd ETH-DEV
 npm run check
 npm start
 ```
 
 Visit **http://localhost:3000**. To use a different port, set `PORT=5173` (macOS/Linux) or `$env:PORT=5173` (PowerShell).
+
+**Important:** `main` currently contains only an initial README. RIFT is developed on the feature branch above and is kept separate until explicit approval. If you cloned before reading this, run `git fetch origin && git switch feat/rift-agent-arena-20261105-ready` (Git 2.23+), or `git checkout -b feat/rift-agent-arena-20261105-ready origin/feat/rift-agent-arena-20261105-ready`.
+
+### One-click local launch
+
+On **Windows**, after checking out the RIFT branch, double-click `RUN-WINDOWS.bat`. On **macOS/Linux**, run `sh RUN-UNIX.sh`. These scripts only start the local sandbox; they do not make payments, deploy contracts, or require API keys.
+
+A **Vercel preview** of the research prototype is reported `READY` by the deployment platform at `https://rift-ethglobal-research-2ljpzey6f-aaaaaaa-5a4f.vercel.app/`; it is not a production/sponsor-verified release. If this preview is unavailable or protected for you, use the local startup steps above. Vercel's GitHub integration is not connected to this repository, so the preview is not automatically redeployed on each GitHub push.
 
 For quick frontend previews, serve `public/` with any static HTTP server. **Do not** double-click `index.html` on disk: browsers commonly block module imports under `file://`.
 
