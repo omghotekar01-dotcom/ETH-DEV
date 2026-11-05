@@ -32,6 +32,15 @@
 | Hedera x402 autonomous testnet paid request | Protected CLI integration code present; needs x402 endpoint, strict merchant allowlist, funded Hedera testnet wallet and SDK installation; not remotely verified |
 | Standalone Vercel research preview | Deployment reported READY; public page/API reachability still requires independent external check |
 
+
+## Glasshouse iOS-style UI (2026-11-05)
+
+This feature branch includes a redesigned responsive web interface inspired by Apple HIG patterns: floating navigation, restrained glass surfaces, a city map, and an interactive spending-firewall demonstration. The design is original web CSS/SVG, **not a native iOS app**. All payments in training mode remain fictional.
+
+The key CSS files are `public/style.css` (existing application) and `public/ios.css` (new design layer). They are linked using **root-relative paths** in `public/index.html` to avoid missing styles on nested URLs. The default local server serves both files. No Lovable tokens or proprietary UI dependencies are required.
+
+See [UI design and architecture](docs/UI_SYSTEM.md) and [QA report](docs/QA_REPORT.md).
+
 ## Quick start
 
 Requires Node.js 22.10+. There are **no required npm packages to run the local game**.
