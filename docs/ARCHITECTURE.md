@@ -30,3 +30,10 @@
 ## No hidden fake integrations
 
 No sample transaction ID, completed onchain write, actual 0G request ID, verified sponsor eligibility, production URL, or success metric is hardcoded or fabricated. Successful mocked 0G tests are clearly fixture tests.
+
+
+## World 003 orchestration (Nov 6 2026)
+
+For a **live, explicitly authorized testnet-only episode**, `server/live-episode.mjs` composes `readArkiv` (prior coordination state), `planWith0G` (real model decision), `upload0GEpisode` (0G Storage audit root and chain tx), `payHederaService` (actual 402 payment only after model chooses correct service), and `publishArkiv` (wallet-owned expiring entity with real network read-back). A local `RunLedger` reserves a UUID before executing and refuses duplicates. `GET /api/agent/receipt` makes the saved run receipt retrievable by its operator token; secrets are not stored. This is **not** production hardened for concurrent replicas and paid mode is disabled on stateless Vercel.
+
+The game remains an expressly labeled **fictional credits** sandbox. Live receipts and game credits are different data types; `RECORD_LIVE_EPISODE` records real proof fields returned by the network but does not itself spend fictional credits. The UI only advances the local stage after a validated three-provider result. See [THREE_SPONSOR_LIVE.md](THREE_SPONSOR_LIVE.md) for run instructions.

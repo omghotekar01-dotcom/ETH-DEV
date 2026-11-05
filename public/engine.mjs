@@ -54,6 +54,17 @@ export function reduceGame(prev,action){
       if(plan.action==='buy'&&!SERVICES.some(x=>x.id===plan.service))return prev;
       return record(s,'agent',`0G model suggested ${plan.action.toUpperCase()} for sandbox stage ${s.stepIndex+1}. Human must apply it; no external payment was made.`,{provider:'0g',requestId:id,action:plan.action,stage:s.stepIndex});
     }
+    case 'RECORD_LIVE_EPISODE':{
+      if(!m||s.status!=='running')return prev;
+      for(const key of ['runId','requestId','rootHash','hederaTx','arkivKey']){
+        if(typeof action[key]!=='string'||action[key].length<8||action[key].length>220)return prev;
+      }
+      if(s.liveReceipts.some(x=>x.runId===action.runId))return prev;
+      s.liveReceipts.push({runId:action.runId,requestId:action.requestId,rootHash:action.rootHash,
+        hederaTx:action.hederaTx,arkivKey:action.arkivKey,step:s.stepIndex,network:'real-testnet-evidence-returned'});
+      return record(s,'verified',`Agent's real-network run returned 0G, Hedera x402 and Arkiv evidence for step ${s.stepIndex+1}. This is separate from game credits.`,
+        {requestId:action.requestId,hederaTx:action.hederaTx,arkivKey:action.arkivKey,provider:'live-three-sponsor'});
+    }
     case 'WAIT': if(!m||s.status!=='running')return prev;return record(s,'agent','Operator accepted WAIT: no credit spent and no stage advanced.');
     case 'ATTACK':{
       if(!m || s.status!=='running')return prev;

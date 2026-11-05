@@ -1,15 +1,18 @@
-# RIFT Arkiv entity schema
+# RIFT Arkiv coordination entity schema — World 003
 
-Proposed schema tag: `rift.agent-missions.v1`. Each entity represents a public, short-lived mission outcome or policy event (not secret mission prompts).
+Proposed unique schema tag: `rift.agent-coordination.v2` on Arkiv **Rabdi** testnet, via `@arkiv-network/sdk`.
 
-| Field | Type | Indexed | Meaning |
-|---|---|---|---|
-| `owner` | addr | Yes | Wallet address allowed to own/change entity |
-| `mission` | str | Yes | One of `blackout`, `supply`, `vault`, `genesis` |
-| `status` | str | Yes | `won`, `lost`, `blocked` |
-| `decision` | str | No | Short public decision summary |
-| `evidence` | str | No | Short public provenance note; cannot claim proof unless verified |
+| Column | Type | Indexed | Use |
+| --- | --- | --- | --- |
+| `owner` | `addr` | Yes | Wallet that owns the entity |
+| `mission` | `str` | Yes | Filter a particular arena mission |
+| `status` | `str` | Yes | `offer`, `planned`, `paid`, `blocked`, `won` or `lost` |
+| `requestId` | `str` | Yes | Verified 0G inference request ID, if present |
+| `service` | `str` | Yes | Selected service / coordination offer |
+| `decision` | `str` | No | Public truncated model decision summary |
+| `evidence` | `str` | No | 0G Storage content root (or explicit public text) |
+| `hederaTx` | `str` | No | Actual facilitator transaction ID, or literal `none` |
 
-**Owner:** account derived from `ARKIV_PRIVATE_KEY` on the Rabdi testnet. **Expiration:** 2 days using `ExpirationTime.fromDays(2)`. **Queries:** `select({$key:true,mission:true,status:true,decision:true,evidence:true}).from(schema).fetch()` from `server/arkiv.mjs`. SDK can also filter on indexed `mission`/`status` when developed further. Do not post private information.
+**Owner:** `ARKIV_PRIVATE_KEY` funded testnet account, written as `addr(account.address)`; **expiry:** 2 days. Queries filter by schema, indexed `mission`, and, when verifying own writes, by wallet owner via `.ownedBy(...)`. The user-facing live mission reads Arkiv entries **before** asking 0G to decide, so coordination data affects the planning context, and the UI can query these entities later; it isn't a write-only vanity log.
 
-**Write command:** `node scripts/arkiv-publish.mjs blackout blocked "Reason" "Public note"`. **Read feature:** `/api/arkiv/feed` and UI Setup → Query Arkiv Network. Real entity key and real wallet address are pending funded testnet execution.
+**Reproducible filter:** `readArkiv({mission:'blackout',owner:'<writer address>'})` in `server/arkiv.mjs` (which performs `.select(...).from(schema).where(eq('mission','blackout')).ownedBy(writer).fetch()`). The real writer address, entity key, and tx hash are **not yet supplied or verified**; fill those after funding and executing the testnet integration.

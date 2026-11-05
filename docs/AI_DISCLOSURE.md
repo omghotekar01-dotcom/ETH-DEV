@@ -11,3 +11,7 @@
 **Human contribution requirement:** Team members must actually implement or revise meaningful functionality, inspect and verify the code, conduct live sponsor integrations, present and explain their decisions, and document their own work. An entirely AI-created submission may be ineligible under ETHGlobal's rules. Do NOT falsify human contributions or present AI-only work as independent human engineering.
 
 **Provenance:** Keep prompts/specs and incremental commits for hackathon review. Do not invent missing reviewer names or tests.
+
+
+### November 6 — World 003
+ChatGPT generated and tested the 0G Storage episode adapter, Hedera testnet x402 merchant and guarded client, Arkiv coordination v2 schema, multi-sponsor workflow, local idempotency ledger, UI pipeline and documentation. Local mocked tests are not evidence of provider funding, settlement, production security or human-authored hackathon contributions. Any team submission must disclose this assistance and document actual independent human contributions.

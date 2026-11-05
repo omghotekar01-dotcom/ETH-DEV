@@ -1,15 +1,21 @@
 {
   "name": "rift-agent-economy-arena",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.3.0",
   "type": "module",
-  "description": "A playable spending firewall for autonomous agents — ETHGlobal Mumbai 2026 research candidate",
-  "engines": {"node": ">=22.10.0"},
+  "description": "RIFT World 003 \u2014 0G + Hedera x402 + Arkiv agentic economy arena",
+  "engines": {
+    "node": ">=22.10.0"
+  },
   "scripts": {
     "start": "node server/index.mjs",
     "dev": "node --watch server/index.mjs",
     "test": "node --test tests/*.test.mjs",
-    "check": "node --check server/index.mjs && node --check public/app.mjs && node --check public/engine.mjs && npm test"
+    "check": "node --check server/index.mjs && node --check public/app.mjs && node --check public/engine.mjs && npm test && node --check server/live-episode.mjs && node --check server/og-storage.mjs && node --check server/hedera-x402.mjs",
+    "live:merchant": "node --env-file=.env scripts/x402-merchant.mjs",
+    "live:arkiv": "node scripts/arkiv-publish.mjs",
+    "live:deps": "npm install --no-save @x402/fetch@2.18.0 @x402/core@2.18.0 @x402/hedera@2.18.0 @x402/express@2.18.0 @hiero-ledger/sdk@2.85.0 express@4.21.2 @arkiv-network/sdk viem @0gfoundation/0g-storage-ts-sdk ethers",
+    "live:start": "node --env-file=.env server/index.mjs"
   },
   "license": "MIT"
 }

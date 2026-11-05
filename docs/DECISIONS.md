@@ -10,3 +10,7 @@
 ### Workflow for other human/AI collaborators
 
 Read `README.md`, `docs/ARCHITECTURE.md`, `docs/TESTING.md`, `docs/AI_DISCLOSURE.md`, and this file before changing features. Update any status checklist after a real test. Do not overwrite experimental and official choices, share test credentials, rewrite Git history, force-push, or claim success on mocked provider output.
+
+
+### November 6 — implementation candidate only
+Implemented a **three-sponsor research integration** (0G PC + 0G Storage, Hedera x402, Arkiv Rabdi) in a separate branch, without declaring the official selected project or partner prizes. Live execution is disabled without explicit funded operator setup; no existing decision is promoted.

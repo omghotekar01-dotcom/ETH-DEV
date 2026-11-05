@@ -4,6 +4,15 @@
 
 > **STATUS — ETHGlobal Mumbai 2026 exploratory candidate, NOT a finalized project choice.** The core game runs locally without third-party credentials. All sandbox spending is fictional. Sponsor integrations below require real credentials, funded testnet accounts, execution, and independent verification; they have **not** been claimed as completed onchain transactions.
 
+
+## World 003 — three mandatory sponsor flows with real AI agents (research build)
+
+The **World 002 3D-style city game** remains completely playable offline. In the Mission Command deck, a new **Live Agent Economy** shows **0G PC + 0G Storage → Hedera x402 → Arkiv Rabdi** and a guarded **RUN REAL 3-SPONSOR AGENT** button. That button is disabled until all 3 services and the local durable ledger are configured. No mocked transactions or model decisions can satisfy the prize gates. Our current environment has **not** run real funded testnet actions.
+
+See **[docs/THREE_SPONSOR_LIVE.md](docs/THREE_SPONSOR_LIVE.md)** for setup, three-terminal run instructions, security gates, and the exact proofs needed. The `npm run live:deps` command installs official SDK dependencies only when live network mode is desired. `npm start` remains dependency-free for the local sandbox. Tests include a mocked three-provider orchestration and safe-stop cases, but mocks are never displayed as live provider evidence.
+
+**Important:** A model that chooses WAIT/EXECUTE intentionally results in **no Hedera payment**; it is not called a complete three-sponsor paid run. Hedera requires a genuine paid 402 request, and Arkiv requires real wallet-owned entities read by a user-visible feature. 0G additionally requires a real model request and uploaded episode record with its request ID.
+
 ## 30-second demonstration
 
 1. Select **Start Playing** → **Blackout Protocol**.
@@ -16,7 +25,7 @@
 
 **AI agents can act faster than humans can review — RIFT tests whether their spending and permissions stay within explicit guardrails.**
 
-### What actually works today
+### What actually works today (World 002 + World 003 code)
 
 | Feature | Current status |
 |---|---|
@@ -27,9 +36,10 @@
 | Rule-based Auto Run | Implemented; NOT an LLM |
 | Service shop, stage duplicate blocking | Implemented; fictional credits |
 | Replay, event log and JSON export | Implemented; local-only, not a blockchain proof |
-| Live 0G Private Computer model advisor | Integration code present; needs OG_API_KEY, OG_MODEL and RIFT_ACCESS_TOKEN; not remotely verified |
-| Arkiv read/write/query-back | Integration code present; needs funded Rabdi wallet, access key and SDK installation; not remotely verified |
-| Hedera x402 autonomous testnet paid request | Protected CLI integration code present; needs x402 endpoint, strict merchant allowlist, funded Hedera testnet wallet and SDK installation; not remotely verified |
+| 0G PC in live agent decision loop | Implemented with strict request validation; needs actual API key and network proof |
+| 0G Storage episode archive | SDK integration and tests added; needs funded 0G testnet wallet and real upload proof |
+| Arkiv read/write/query-back | Indexed expiring mission coordination v2 entities with pre-decision query + readback; needs funded Rabdi writer and live verification |
+| Hedera x402 autonomous testnet paid request | Own x402 protected merchant endpoint + auto-paying bounded client code; requires real testnet USDC and successful settlement |
 | Standalone Vercel research preview | Deployment reported READY; public page/API reachability still requires independent external check |
 
 
