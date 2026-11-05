@@ -26,7 +26,9 @@ test('iOS design defines responsive navigation, accessible controls, and reduced
   assert.match(app,/function mobileNav\(\)/);
   assert.match(app,/aria-label="Mobile navigation"/);
   assert.match(app,/case'more':overlay='more'/);
-  assert.match(app,/case'attack':dispatch\(\{type:'ATTACK'/);
+  assert.match(app,/case'attack':/);
+  assert.match(app,/type:'ATTACK'/);
+  assert.match(app,/firewallMoment/);
   assert.match(app,/function apply0GAdvice\(/);
 });
 
@@ -48,4 +50,31 @@ test('local server serves both CSS files and JavaScript with correct MIME types'
       assert.ok((await response.text()).includes(fragment),`Missing ${fragment} in ${route}`);
     }
   }finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}
+});
+
+
+test('World 002 has 3D districts, usable camera tools and an honest blocked-event view',async()=>{
+  const app=await read('public/app.mjs');
+  const css=await read('public/arena.css');
+  const html=await read('public/index.html');
+  assert.match(html,/href="\/arena\.css"/);
+  for(const fn of ['function makeNode(', 'function tower(', 'function prism(', 'function worldHUD(', 'function worldAgents(', 'function livePanel(']) assert.ok(app.includes(fn),fn);
+  for(const action of ["case'zoom-in'", "case'zoom-out'", "case'zoom-reset'", "case'focus'", "case'dismiss-threat'", "case'attack'"]) assert.ok(app.includes(action),action);
+  assert.match(app,/Payment blocked\./);
+  assert.match(app,/NO FUNDS MOVED/);
+  assert.match(css,/\.world-deck \.world svg:not\(#world-map\)/);
+  assert.match(css,/prefers-reduced-motion/);
+  assert.match(css,/@media\(max-width:760px\)/);
+});
+
+test('server serves World 002 stylesheet without external CSS dependency',async()=>{
+ const server=createServer();
+ await new Promise((resolve,reject)=>{server.once('error',reject);server.listen(0,'127.0.0.1',resolve)});
+ try{
+  const base=`http://127.0.0.1:${server.address().port}`;
+  const response=await fetch(base+'/arena.css');
+  assert.equal(response.status,200);
+  assert.match(response.headers.get('content-type'),/text\/css/);
+  assert.match(await response.text(),/RIFT WORLD 002/);
+ }finally{await new Promise((resolve,reject)=>server.close(err=>err?reject(err):resolve()));}
 });

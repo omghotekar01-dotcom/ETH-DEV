@@ -1,12 +1,42 @@
-# RIFT Glasshouse UI verification
+# RIFT World 002 — QA Report
 
-- Scope: self-contained local simulation UI, engine integration and static file serving.
-- Test environment: Node 22.16.0, local Chromium browser through an isolated inline-resource QA harness.
-- Browser widths tested: 1440, 768, 390 px; `scrollWidth` matched viewport on all three.
-- Interactions tested: navigate to Missions, launch Blackout Protocol, verify active mission, simulate rogue 999-credit attempt and observe `1 BLOCKED` while no browser errors occurred. Mobile More sheet listed three secondary pages.
-- Browser visible backgrounds and hero/nav layout were computed using `getComputedStyle`, confirming CSS actually applied in the QA harness.
-- `npm run check` covers syntax, reducer/API tests and UI static route tests.
-- Exact public preview remote CSS loading and live sponsor integrations are **not yet externally verified**. Build status alone does not establish external functionality.
-- Do not confuse any simulated balance with real HBAR/USDC. This is a **training sandbox**.
+This report describes checks actually run against the local implementation. **It does not assert a production deployment is verified or that Web3 transactions have occurred.**
 
-Follow-up for human testers: open the deployed URL, inspect `/ios.css` response as `200 text/css`, test keyboard focus and navigation, test all four mission outcomes, review mobile devices with actual touch input, and validate each sponsor flow with testnet evidence.
+## Local automated tests
+
+- `npm run check`: **26 tests passed**, zero failed (Node.js 22, no install required).
+- JavaScript entrypoints passed Node syntax validation.
+- The local HTTP server returned both `/style.css`, `/ios.css`, and the new `/arena.css` with CSS content types; `/api/health` and missing-token protections retain their behavior.
+
+## Visual and interaction smoke tests
+
+Chromium was run at **1440×900, 834×1112, and 390×844** using the real engine plus app script and the exact three CSS source files. The testing environment blocked headless localhost network navigation, so assets were loaded as **equivalent inline source** for the visual/browser checks; local server routes were separately tested over HTTP with Node tests. This is a limitation of the environment rather than proof of remote deployment behavior.
+
+Verified in each viewport:
+
+- Six districts rendered; changed selected district to **The Vault**.
+- Zoom-in changed the map scale from 100% to 120%.
+- Started **Blackout Protocol** from the Command deck; the budget correctly initialized to 22 credits.
+- Simulated an unauthorized 999-credit payment; the event was blocked and the budget stayed at 22.
+- Dismissed the security-event presentation; executed one stage, reducing the remaining balance from 22 to 20 under the existing agent discount rule.
+- Expanded the tactical map using the focus control.
+- No page-level JavaScript errors or document horizontal overflow.
+
+Additional desktop flow:
+
+- Started **Vault Breach**, reached the human checkpoint, confirmed execution is disabled until operator approval, approved the action, and resumed.
+- Bought a 4-credit Risk Verification service in the sandbox, changing the remaining balance from 18 to 14.
+
+## Defects found and corrected
+
+- Existing `.world svg` stylesheet rules initially resized nested toolbar icons to map size. Fixed using exact CSS scoping to `#world-map` versus inline icons.
+- A mobile test using force-click on an off-screen mission could activate the overlapping bottom navigation. Verified the normal accessible button click path instead. The regular browser auto-scrolling click works.
+- The blocked security outcome was partially below the fold on mobile. The updated handler centers the event in the viewport after the reducer successfully blocks it.
+
+## Outstanding limitations
+
+- This is a research UI and deterministic training simulation. Real 0G inference, Hedera x402 settlement, and Arkiv roundtrip remain unverified.
+- Verify production remote asset reachability and CSP through an independent browser before submission.
+- Conduct actual human review and preserve AI-use disclosure as required by ETHGlobal.
+- Game-state history is local to the browser; replay is not a blockchain proof.
+- No software can be guaranteed free of all errors. This report is the scope of verified checks, not a guarantee of perfection.

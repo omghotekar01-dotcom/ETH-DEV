@@ -140,3 +140,9 @@ Submission deadline: **November 7, 2026, 9:00 AM IST**. Up to **3 partner prize 
 Development commit attribution requested by the project owner: **Om Ghotekar <omghotekar01@gmail.com>**. The connected GitHub publishing account is `omghotekar01-dotcom` (Omiiii). See `docs/AI_DISCLOSURE.md` and `docs/HUMAN_CONTRIBUTIONS.md` for required event-compliant human work.
 
 MIT License. Research-only status remains until explicitly promoted to an official decision.
+
+## World 002 — Cinematic Arena UX (research branch)
+
+The Arena now has six purpose-built original SVG district structures, a zoomable/focusable tactical city, quick-launch missions, a live Command deck, a state-bound security-event visualization, and iOS/macOS-inspired responsive styling. The actual training engine, API boundaries, and policy checks remain unchanged. See [`docs/ARENA_WORLD_002.md`](docs/ARENA_WORLD_002.md) and [`docs/QA_REPORT.md`](docs/QA_REPORT.md).
+
+The page now loads a third local stylesheet: `public/arena.css` (after the base and Glasshouse design sheets). You do **not** need Lovable credits or any new npm dependencies to run this update. **No crypto is transferred:** the 999-credit blocked event is a deterministic local policy demonstration.
