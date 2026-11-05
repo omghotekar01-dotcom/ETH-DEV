@@ -1,1 +1,125 @@
-# ETH-DEV
+# RIFT — The Agent Spending Firewall
+
+**A playable strategy game that demonstrates a simple real problem: an autonomous AI agent may spend money or take an action you did not authorize. RIFT makes its decisions, budget limits, and human checkpoints visible.**
+
+> **STATUS — ETHGlobal Mumbai 2026 exploratory candidate, NOT a finalized project choice.** The core game runs locally without third-party credentials. All sandbox spending is fictional. Sponsor integrations below require real credentials, funded testnet accounts, execution, and independent verification; they have **not** been claimed as completed onchain transactions.
+
+## 30-second demonstration
+
+1. Select **Start Playing** → **Blackout Protocol**.
+2. Click **Simulate Rogue Agent**. A fictional agent tries to pay **999 sandbox credits to an unapproved merchant**; the spending firewall blocks the attempt and the balance remains unchanged.
+3. Execute mission steps manually, or press **Auto Run** for the clearly labeled deterministic rule-driven loop.
+4. Start **Vault Breach** to show a high-risk action waiting for human approval or denial.
+5. Open **Replay** to inspect the trace and export a JSON transcript. Under **Setup**, inspect which real integrations are configured and query Arkiv when connected.
+
+### The problem in one line
+
+**AI agents can act faster than humans can review — RIFT tests whether their spending and permissions stay within explicit guardrails.**
+
+### What actually works today
+
+| Feature | Current status |
+|---|---|
+| Responsive, clickable six-district tactical map | Implemented, local simulation |
+| Four distinct missions, three role-based agents, budget/score logic | Implemented, tested |
+| Rogue-payment firewall (limit + merchant allowlist) | Implemented, tested — simulated amounts only |
+| Human checkpoint, deny path, pause/resume/abort | Implemented, tested |
+| Rule-based Auto Run | Implemented; NOT an LLM |
+| Service shop, stage duplicate blocking | Implemented; fictional credits |
+| Replay, event log and JSON export | Implemented; local-only, not a blockchain proof |
+| Live 0G Private Computer model advisor | Integration code present; needs OG_API_KEY, OG_MODEL and RIFT_ACCESS_TOKEN; not remotely verified |
+| Arkiv read/write/query-back | Integration code present; needs funded Rabdi wallet, access key and SDK installation; not remotely verified |
+| Hedera x402 autonomous testnet paid request | Protected CLI integration code present; needs x402 endpoint, strict merchant allowlist, funded Hedera testnet wallet and SDK installation; not remotely verified |
+| Production live deployment | Not independently confirmed |
+
+## Quick start
+
+Requires Node.js 22.10+. There are **no required npm packages to run the local game**.
+
+```bash
+git clone https://github.com/omghotekar01-dotcom/ETH-DEV.git
+cd ETH-DEV
+npm run check
+npm start
+```
+
+Visit **http://localhost:3000**. To use a different port, set `PORT=5173` (macOS/Linux) or `$env:PORT=5173` (PowerShell).
+
+For quick frontend previews, serve `public/` with any static HTTP server. **Do not** double-click `index.html` on disk: browsers commonly block module imports under `file://`.
+
+## Optional live 0G inference (provider API, no blockchain spending)
+
+Copy `.env.example` values into your hosting environment or export them before starting the server. Do **not** commit secrets.
+
+```bash
+export OG_API_KEY='obtain-from-0g-private-computer'
+export OG_MODEL='model-id-from-0g-dashboard'
+export RIFT_ACCESS_TOKEN='create-a-long-random-unguessable-token'
+npm start
+```
+
+When an active mission is running, **Ask 0G for a plan** prompts for the demo token (kept in the browser tab's memory only). The backend calls the official OpenAI-compatible 0G router and validates a tiny, allowlisted JSON plan. It returns a real request ID only when a real provider response includes one. It never gives AI access to a wallet, arbitrary URLs or unchecked payment tools. The model cannot override the budget policy. Production deployment with a funded inference API requires real authentication and rate limiting beyond this private demo gate.
+
+0G docs: https://docs.0g.ai/developer-hub/building-on-0g/compute-network/overview
+
+## Optional Arkiv Rabdi integration (real testnet only)
+
+Install external SDKs when online and obtain Rabdi testnet GLM from the faucet:
+
+```bash
+npm install @arkiv-network/sdk viem
+export ARKIV_ACCESS_KEY='get-from-arkiv-hub'
+export ARKIV_PRIVATE_KEY='private-key-for-testnet-only'
+node scripts/arkiv-publish.mjs blackout blocked "Firewall refused unknown merchant" "Public simulation outcome, NOT a Hedera settlement"
+```
+
+The script writes a wallet-owned **2-day entity** and performs a real read-back query. The app's **Setup → Query Arkiv Network** performs a separate read via `/api/arkiv/feed` when configured. An indexer delay or SDK/API failure must be reported as a failure, never as successful persistence. Do not publish private user data.
+
+Arkiv docs: https://docs.arkiv.network/start-here/first-entity/
+
+## Optional Hedera x402 settlement (real testnet only)
+
+**Never use a mainnet private key.** The CLI makes a payment only after verifying: HTTPS, explicitly allowlisted hostname and recipient, Hedera testnet, HBAR asset, exact scheme, and a tight per-payment cap.
+
+```bash
+npm install @x402/core @x402/hedera @x402/fetch @hiero-ledger/sdk
+export HEDERA_ACCOUNT_ID='0.0.123456'
+export HEDERA_PRIVATE_KEY='testnet-only-private-key'
+export HEDERA_ALLOWED_PAY_TO='0.0.234567'
+export RIFT_X402_ENDPOINT='https://your-approved-testnet-merchant.example/resource'
+export RIFT_X402_ALLOWED_HOST='your-approved-testnet-merchant.example'
+export RIFT_MAX_TINYBAR='1000000'
+node scripts/hedera-x402.mjs
+```
+
+The script expects an authentic HTTP 402 challenge and a successful settlement receipt. It outputs the **actual Hedera transaction ID** only if received and validated. The CLI is NOT automatically invoked by the UI, and sandbox credits are NOT HBAR. **Until a successful testnet transaction is independently shown on HashScan, Hedera sponsor requirements are NOT met.**
+
+Hedera docs: https://docs.hedera.com/solutions/ai/x402/pay-with-x402
+
+## Project organization
+
+```text
+public/          Framework-free responsive game, tactical map, pure mission engine
+server/          Secure local server, 0G inference adapter, Arkiv adapter
+api/             Optional Vercel serverless handlers
+scripts/         Explicit real testnet integration CLIs
+arkiv/           Arkiv schema and sponsor-criterion reports
+scripts/         Operator-only integration scripts (not public client wallet)
+tests/           Node's built-in test runner
+.github/workflows/  Test CI
+ docs/           Architecture, testing, project decisions and human/AI contributions
+```
+
+## Event rules and submission truthfulness
+
+ETHGlobal permits AI tools **only alongside meaningful human contribution**. Human teammates must review, implement and independently test meaningful parts; attribute all AI assistance. Do not claim sponsor eligibility, finalist selection, live inference, deployment or network transaction that is not actually verified. Classic track work must start after hacking begins; distinguish reused starter material from new work in the final submission. Use small traceable commits.
+
+Submission deadline: **November 7, 2026, 9:00 AM IST**. Up to **3 partner prize sponsors**. The shortlisted sponsor trio (not yet finalized) is **0G + Hedera + Arkiv**, each with separate exact qualification requirements. See `docs/PRIZE_CHECKLIST.md`.
+
+**Source:** https://ethglobal.com/events/mumbai/info/details and https://ethglobal.com/events/mumbai/prizes
+
+## Attribution
+
+Development commit attribution requested by the project owner: **Om Ghotekar <omghotekar01@gmail.com>**. The connected GitHub publishing account is `omghotekar01-dotcom` (Omiiii). See `docs/AI_DISCLOSURE.md` and `docs/HUMAN_CONTRIBUTIONS.md` for required event-compliant human work.
+
+MIT License. Research-only status remains until explicitly promoted to an official decision.

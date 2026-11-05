@@ -1,0 +1,15 @@
+{
+  "name": "rift-agent-economy-arena",
+  "private": true,
+  "version": "0.2.0",
+  "type": "module",
+  "description": "A playable spending firewall for autonomous agents — ETHGlobal Mumbai 2026 research candidate",
+  "engines": {"node": ">=22.10.0"},
+  "scripts": {
+    "start": "node server/index.mjs",
+    "dev": "node --watch server/index.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "check": "node --check server/index.mjs && node --check public/app.mjs && node --check public/engine.mjs && npm test"
+  },
+  "license": "MIT"
+}
