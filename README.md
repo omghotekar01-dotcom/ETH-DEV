@@ -5,6 +5,18 @@
 > **STATUS — ETHGlobal Mumbai 2026 exploratory candidate, NOT a finalized project choice.** The core game runs locally without third-party credentials. All sandbox spending is fictional. Sponsor integrations below require real credentials, funded testnet accounts, execution, and independent verification; they have **not** been claimed as completed onchain transactions.
 
 
+## Sponsor 1, Step 01 — 0G Private Computer setup (November 6, 2026)
+
+RIFT can now select the **0G mainnet or testnet Router** correctly. These environments have different accounts, keys and compute credits; choose the network the ETHGlobal sponsor assigned to your team. The lightweight setup commands do not install npm dependencies, reveal secrets or trigger Hedera payments.
+
+```powershell
+npm run og:check     # SAFE: shows missing variables, no network call or payment
+npm run og:models    # asks 0G Router for current model IDs; no inference charge
+npm run og:run       # ONE real, potentially charged 0G inference; only after obtaining credits
+```
+
+**Never paste the API key into chat or GitHub.** Set `OG_NETWORK`, `OG_API_KEY`, `OG_MODEL` and `RIFT_ACCESS_TOKEN` in a locally ignored `.env`. `npm run og:run` writes a sanitized non-public receipt to `.rift-runtime/og-evidence` when and only when the 0G Router responds with a real request ID. A CLI-only model result is not yet the sponsor-qualified live UI demo. Step-by-step operator instructions and pending gates: **[docs/0G_STEP_01.md](docs/0G_STEP_01.md)**; full tracker: **[SPONSOR_MASTER_CHECKLIST.md](SPONSOR_MASTER_CHECKLIST.md)**.
+
 ## World 003 — three mandatory sponsor flows with real AI agents (research build)
 
 The **World 002 3D-style city game** remains completely playable offline. In the Mission Command deck, a new **Live Agent Economy** shows **0G PC + 0G Storage → Hedera x402 → Arkiv Rabdi** and a guarded **RUN REAL 3-SPONSOR AGENT** button. That button is disabled until all 3 services and the local durable ledger are configured. No mocked transactions or model decisions can satisfy the prize gates. Our current environment has **not** run real funded testnet actions.

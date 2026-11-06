@@ -39,6 +39,8 @@
 
 ## Phase 1 — 0G ♾️ Build with 0G PC (FIRST GATE)
 
+**Execution note (2026-11-06): Step 01 software preparation complete; live identity/credit/key/model access and actual inference remain pending. See `docs/0G_STEP_01.md`.**
+
 **Official must-show requirements**
 
 - [ ] A real **0G Private Computer inference** in the *main user journey*, not just a diagnostic endpoint or a generic chat wrapper.
@@ -56,6 +58,8 @@
 
 **Exact next actions, in execution order**
 
+- [x] Build an offline-safe `npm run og:check` and `npm run og:models` helper; verify 0G mainnet/testnet Router separation, no secret logging, and passing unit tests. **This is code readiness, not inference proof.**
+- [x] Build a separate opt-in `npm run og:run` to record one genuine inference response ID in an ignored sanitized local evidence file; **not yet executed with real credentials**.
 - [ ] Get the event's allocated 0G compute credits and create/configure a valid 0G PC key through official channels.
 - [ ] Check available models and configure \`OG_API_KEY\`, \`OG_MODEL\` directly in local ignored \`.env\` (never send them in chat).
 - [ ] Check the full prerequisites of the orchestrator: to run only 0G first, use the protected 0G advisor endpoint; do **not** enable \`RIFT_ENABLE_LIVE_PAYMENTS\` yet.
