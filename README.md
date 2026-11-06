@@ -51,6 +51,25 @@ The key CSS files are `public/style.css` (existing application) and `public/ios.
 
 See [UI design and architecture](docs/UI_SYSTEM.md) and [QA report](docs/QA_REPORT.md).
 
+
+## World 004 — sponsor evidence lab (November 6, 2026)
+
+The three-provider live route has been hardened with **quote-change rejection**, **ambiguous-payment stop/no-retry status**, **Arkiv full-field read-back**, and **no-spend merchant preflight**. An export button now saves the locally recorded live episode as JSON; a command-line tool produces the explicit sponsor evidence report. See [World 004 guide](docs/WORLD_004_EVIDENCE_LAB.md).
+
+```powershell
+npm run check
+npm start
+# Optional actual network testing AFTER putting required testnet secrets in .env locally:
+npm run live:deps
+npm run live:merchant
+npm run live:preflight
+npm run live:start
+# Once a real run creates a ledger file:
+npm run live:evidence -- .rift-runtime/live-episodes/<actual-run-uuid>.json
+```
+
+**No real testnet receipts were obtained in this build.** The local tests verify safety logic, but do not satisfy sponsor prize requirements. The full operator flow needs funded testnet wallets, permissioned 0G compute and genuine runtime integration evidence.
+
 ## Quick start
 
 Requires Node.js 22.10+. There are **no required npm packages to run the local game**.

@@ -31,6 +31,11 @@ export async function readArkiv({mission=null,limit=20,owner=null}={},options={}
     expiresAt:String(e.$expiresAt??''),mission:e.mission.value,status:e.status.value,
     requestId:e.requestId.value,service:e.service.value,decision:e.decision.value,evidence:e.evidence.value,hederaTx:e.hederaTx.value}));
 }
+export function matchesArkivWrite(row,record,entityKey,owner){
+  return String(row?.key||'').toLowerCase()===String(entityKey).toLowerCase() &&
+    String(row?.owner||'').toLowerCase()===String(owner).toLowerCase() &&
+    ['mission','status','decision','evidence','requestId','service','hederaTx'].every(field=>row[field]===record[field]);
+}
 export async function publishArkiv(data,options={}){
   const record=validateArkivRecord(data);const m=await arkivClients(options);
   if(!m.env.ARKIV_PRIVATE_KEY)throw Object.assign(new Error('ARKIV_PRIVATE_KEY missing'),{status:503});
@@ -41,6 +46,6 @@ export async function publishArkiv(data,options={}){
   const entityKey=result?.entityKey,txHash=result?.txHash;
   if(!entityKey||!txHash)throw new Error('Arkiv write lacks entity key or transaction hash');
   const visible=await readArkiv({mission:record.mission,owner:account.address,limit:30},options);
-  if(!visible.some(x=>String(x.key).toLowerCase()===String(entityKey).toLowerCase()))throw new Error('Arkiv write not found in real query-back');
+  if(!visible.some(x=>matchesArkivWrite(x,record,entityKey,account.address)))throw new Error('Arkiv write not found or fields differ in real query-back');
   return {entityKey,txHash,owner:account.address,expiration:'2 days',readBack:true,mission:record.mission};
 }

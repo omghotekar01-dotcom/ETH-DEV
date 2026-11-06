@@ -11,6 +11,14 @@ if(new URL(facilitator).protocol!=='https:')throw new Error('HTTPS facilitator r
 const server=new x402ResourceServer(new HTTPFacilitatorClient({url:facilitator})).register('hedera:*',new ExactHederaScheme({}));
 const app=express();
 const path='/intel';
+// Validate the route parameters before the x402 middleware. Do not charge
+// agents for requests that cannot be fulfilled.
+app.use('/intel',(req,res,next)=>{
+  const mission=String(req.query.mission||'');const service=String(req.query.service||'');
+  if(!['blackout','supply','vault','genesis'].includes(mission)||!['recon','marketData','riskCheck'].includes(service))
+    return res.status(400).json({error:'Invalid mission or service — no x402 payment requested'});
+  next();
+});
 app.use(paymentMiddleware({
   'GET /intel':{
     accepts:[{scheme:'exact',price:{asset:'0.0.429274',amount:'1000'},network:'hedera:testnet',payTo:recipient}],

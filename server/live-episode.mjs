@@ -40,7 +40,7 @@ export async function runLiveEpisode(data,{env=process.env,ledger=new RunLedger(
   if(!ready.enabled)throw Object.assign(new Error('Live testnet spending disabled; set RIFT_ENABLE_LIVE_PAYMENTS=true on a durable local server'),{status:503});
   const runId=await ledger.claim(data.runId);
   const result={runId,mission:ctx.mission.id,stepIndex:data.stepIndex,selectedAgent:data.selectedAgent,network:'Hedera testnet + 0G + Arkiv Rabdi',mode:'real-network',stages:[],status:'running'};
-  let paid=false;
+  let paid=false,paymentAttempted=false;
   const stage=async (name,job)=>{
     const started=new Date().toISOString();try{const value=await job();result.stages.push({name,status:'verified-return',at:started});await ledger.save(runId,result);return value;}
     catch(e){result.stages.push({name,status:'failed',at:started,reason:String(e.message).slice(0,200)});throw e;}
@@ -63,15 +63,23 @@ export async function runLiveEpisode(data,{env=process.env,ledger=new RunLedger(
     }
     if(ai.plan.service!==ctx.step.service)throw new Error('Model requested a service unrelated to the active mission step; safe-stop');
     // Spending budget is pre-authorized and bounded by environmental merchant+amount caps.
-    result.payment=await stage('hedera-x402-settlement',async()=>{const receipt=await pay({mission:ctx.mission.id,service:ai.plan.service},{env});
+    result.payment=await stage('hedera-x402-settlement',async()=>{
+      // Persist the uncertain boundary BEFORE asking the wallet to sign. If the
+      // process crashes or network times out, the run must remain non-retryable.
+      result.paymentAttemptedAt=new Date().toISOString();
+      await ledger.save(runId,result);
+      paymentAttempted=true;
+      const receipt=await pay({mission:ctx.mission.id,service:ai.plan.service},{env});
       if(receipt?.facilitatorConfirmed&&receipt?.transactionId){paid=true;result.payment=receipt;}return receipt;});
     if(!result.payment?.facilitatorConfirmed||!result.payment?.transactionId)throw new Error('Hedera settlement not confirmed');
     result.arkiv=await stage('arkiv-write-readback',()=>write({mission:ctx.mission.id,status:'paid',decision:ai.plan.reason,evidence:result.storage.rootHash,
       requestId:ai.requestId,service:ai.plan.service,hederaTx:result.payment.transactionId},{env}));
     if(!result.arkiv?.readBack||!result.arkiv?.entityKey)throw new Error('Arkiv query-back not confirmed');
     result.status='complete';await ledger.save(runId,result);return result;
-  }catch(err){result.status=paid?'partial-payment-settled':'safe-stopped';result.error=String(err.message).slice(0,240);
-    result.recovery=paid?'Do not retry this run. A testnet payment may have settled; inspect the transaction and run ledger first.':'No paid request was confirmed; investigate before starting another run.';
+  }catch(err){result.status=paid?'partial-payment-settled':paymentAttempted?'payment-status-unknown':'safe-stopped';result.error=String(err.message).slice(0,240);
+    result.recovery=paid?'Do not retry this run. A testnet payment settled; inspect the transaction and run ledger first.':
+      paymentAttempted?'Do not retry or issue a new payment until Hedera mirror-node/HashScan and facilitator logs confirm whether settlement occurred. Network timeouts are ambiguous.':
+      'The Hedera payment stage was not started; investigate before creating another run.';
     await ledger.save(runId,result);return result;
   }
 }

@@ -101,3 +101,5 @@ body{background:radial-gradient(ellipse 75% 55% at 65% -20%,rgba(79,95,152,.16),
 .brief-sponsor-line>span{font-size:9px;color:#9fe8dd;font-weight:800;margin-right:3px}.brief-sponsor-line strong{font-size:10px;color:#d2e8ff;font-weight:730}.brief-sponsor-line i{color:#80b6dc;font-style:normal}.brief-sponsor-line small{border:1px solid #b2c6e82e;border-radius:50px;padding:5px 7px;color:#a6b6cc;font-size:8px}
 .live-recover{display:flex;align-items:center;justify-content:center;gap:7px;margin:8px auto 0;padding:8px 9px;background:transparent;color:#96d6ed;border:1px solid #95d4ee35;border-radius:9px;font-size:10px}
 .live-recover:hover{background:#b4d8f314}
+
+.live-export{border:1px solid rgba(143,247,218,.35);background:rgba(120,236,207,.09);color:#9ff4de;border-radius:10px;padding:10px 13px;margin-top:12px;cursor:pointer;font-weight:650;font-size:12px;width:100%;text-align:center}.live-export:hover,.live-export:focus-visible{background:rgba(120,236,207,.18)}

@@ -54,12 +54,12 @@ async function bodyJSON(req){let raw='';for await(const chunk of req){raw+=chunk
 export function createServer(){return http.createServer(async(req,res)=>{
   try{
     const u=new URL(req.url,'http://localhost');
-    if(u.pathname==='/api/health'&&req.method==='GET')return send(res,200,{name:'RIFT',mode:'sandbox',version:'0.3.0',providers:providers(),live:liveReadiness(),liveVerification:{og:false,hedera:false,arkiv:false},note:'Configured does not mean transaction-verified.'});
+    if(u.pathname==='/api/health'&&req.method==='GET')return send(res,200,{name:'RIFT',mode:'sandbox',version:'0.4.0',providers:providers(),live:liveReadiness(),liveVerification:{og:false,hedera:false,arkiv:false},note:'Configured does not mean transaction-verified.'});
     if(u.pathname==='/api/agent/live'&&req.method==='POST'){
       if(!authorized(req.headers.authorization))return send(res,403,{error:'Private live agent access required'});
       if(!quota(req.socket.remoteAddress||'anonymous'))return send(res,429,{error:'Rate limit reached'});
       const result=await runLiveEpisode(await bodyJSON(req));
-      return send(res,result.status==='complete'||result.status==='completed-no-payment'?200:result.status==='partial-payment-settled'?207:424,result);
+      return send(res,result.status==='complete'||result.status==='completed-no-payment'?200:['partial-payment-settled','payment-status-unknown'].includes(result.status)?207:424,result);
     }
     if(u.pathname==='/api/agent/receipt'&&req.method==='GET'){
       if(!authorized(req.headers.authorization))return send(res,403,{error:'Private live agent access required'});

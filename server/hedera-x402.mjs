@@ -31,7 +31,7 @@ export function parseSettlement(header,quote){
   try{proof=JSON.parse(Buffer.from(header,'base64').toString('utf8'));}catch{throw new Error('Invalid PAYMENT-RESPONSE receipt');}
   if(proof.success!==true||proof.network!==network)throw new Error('Facilitator did not attest successful Hedera settlement');
   const transactionId=proof.transactionId||proof.transaction;
-  if(typeof transactionId!=='string'||transactionId.length<10||transactionId.length>200)throw new Error('Receipt has no verifiable transaction identifier');
+  if(typeof transactionId!=='string'||!/^0\.0\.\d+@\d+\.\d{1,9}$/.test(transactionId))throw new Error('Receipt has no verifiable Hedera transaction identifier');
   return {network,asset,amount:quote.amount,merchant:quote.merchant,transactionId,facilitatorConfirmed:true,
     hashscan:`https://hashscan.io/testnet/transaction/${encodeURIComponent(transactionId)}`};
 }
@@ -46,13 +46,29 @@ export async function payHederaService({mission,service},{env=process.env,fetche
   if(first.status!==402)throw new Error('Merchant is not returning a valid HTTP 402 challenge');
   const challenge=first.headers.get('payment-required');if(!challenge)throw new Error('Merchant omitted payment requirements');
   const quote=validatePaymentQuote(challenge,c);
+  // Revalidate EVERY x402 challenge, including the 402 that the payment wrapper
+  // receives on its own initial fetch. Otherwise a changing quote may bypass the
+  // preflight price/payee check before the SDK signs the settlement.
+  const guardedFetch=async (url,init)=>{
+    const response=await fetcher(url,init);
+    if(response.status===402){
+      const encoded=response.headers.get('payment-required');
+      if(!encoded)throw new Error('x402 retry challenge did not contain payment requirements');
+      const candidate=validatePaymentQuote(encoded,c);
+      if(candidate.amount!==quote.amount||candidate.asset!==quote.asset||candidate.merchant!==quote.merchant||candidate.network!==quote.network)
+        throw new Error('x402 payment quote changed between checks; refusing signature');
+    }
+    return response;
+  };
   const dependencies=transport||await (async()=>{
     const [{wrapFetchWithPayment,x402Client},{createClientHederaSigner},{ExactHederaScheme},{PrivateKey}]=await Promise.all([
       import('@x402/fetch'),import('@x402/hedera'),import('@x402/hedera/exact/client'),import('@hiero-ledger/sdk')]);
     const signer=createClientHederaSigner(c.account,PrivateKey.fromStringECDSA(c.privateKey),{network});
-    return {paidFetch:wrapFetchWithPayment(fetcher,new x402Client().register(network,new ExactHederaScheme(signer)))};
+    return {paidFetch:wrapFetchWithPayment(guardedFetch,new x402Client().register(network,new ExactHederaScheme(signer)))};
   })();
-  const settled=await dependencies.paidFetch(u.toString(),{redirect:'error',signal:AbortSignal.timeout(45000)});
+  const paidFetch=dependencies.createPaidFetch?.(guardedFetch)||dependencies.paidFetch;
+  if(typeof paidFetch!=='function')throw new Error('Missing payment transport');
+  const settled=await paidFetch(u.toString(),{redirect:'error',signal:AbortSignal.timeout(45000)});
   if(!settled.ok)throw new Error(`x402 paid request unsuccessful: HTTP ${settled.status}`);
   const receipt=parseSettlement(settled.headers.get('payment-response'),quote);
   const data=await settled.json();
